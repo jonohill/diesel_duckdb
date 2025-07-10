@@ -1,6 +1,7 @@
 use diesel::{
     connection::{
-        get_default_instrumentation, statement_cache::StatementCache, AnsiTransactionManager, ConnectionSealed, DefaultLoadingMode, Instrumentation, LoadConnection, SimpleConnection
+        get_default_instrumentation, statement_cache::StatementCache, AnsiTransactionManager,
+        ConnectionSealed, DefaultLoadingMode, Instrumentation, LoadConnection, SimpleConnection,
     },
     expression::QueryMetadata,
     migration::{MigrationConnection, CREATE_MIGRATIONS_TABLE},
@@ -52,19 +53,22 @@ impl<'conn, 'query> DuckDbRow<'conn, 'query> {
         let column_count = row.as_ref().column_count();
         let mut values = Vec::with_capacity(column_count);
         let mut column_names = Vec::with_capacity(column_count);
-        
+
         for i in 0..column_count {
             // Extract the value
-            let value = row.get::<_, duckdb::types::Value>(i)
+            let value = row
+                .get::<_, duckdb::types::Value>(i)
                 .map_err(|e| diesel::result::Error::DeserializationError(e.into()))?;
             values.push(value);
-            
+
             // Extract the column name
-            let name = row.as_ref().column_name(i)
+            let name = row
+                .as_ref()
+                .column_name(i)
                 .map_err(|e| diesel::result::Error::DeserializationError(e.into()))?;
             column_names.push(name.to_string());
         }
-        
+
         Ok(Self {
             values,
             column_names,
@@ -138,11 +142,17 @@ impl<'row> Field<'row, DuckDb> for DuckDbField<'row> {
     }
 
     fn is_null(&self) -> bool {
-        matches!(self.row.values.get(self.idx), Some(duckdb::types::Value::Null))
+        matches!(
+            self.row.values.get(self.idx),
+            Some(duckdb::types::Value::Null)
+        )
     }
 
     fn value(&self) -> Option<<DuckDb as diesel::backend::Backend>::RawValue<'_>> {
-        self.row.values.get(self.idx).map(|value| duckdb::types::ToSqlOutput::Owned(value.clone()))
+        self.row
+            .values
+            .get(self.idx)
+            .map(|value| duckdb::types::ToSqlOutput::Owned(value.clone()))
     }
 }
 
@@ -184,7 +194,7 @@ impl LoadConnection<DefaultLoadingMode> for DuckDbConnection {
                 let mut q = self.connection.prepare_cached(sql).map_diesel_error()?;
                 let mut rows = q.query(params).map_diesel_error()?;
                 let mut result_rows = Vec::new();
-                
+
                 while let Some(row) = rows.next().map_diesel_error()? {
                     result_rows.push(DuckDbRow::from_duckdb_row(row)?);
                 }
@@ -194,7 +204,7 @@ impl LoadConnection<DefaultLoadingMode> for DuckDbConnection {
                 let mut q = self.connection.prepare(&sql).map_diesel_error()?;
                 let mut rows = q.query(params).map_diesel_error()?;
                 let mut result_rows = Vec::new();
-                
+
                 while let Some(row) = rows.next().map_diesel_error()? {
                     result_rows.push(DuckDbRow::from_duckdb_row(row)?);
                 }

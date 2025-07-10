@@ -1,9 +1,9 @@
 mod schema;
 
 use crate::DuckDbConnection;
-use diesel::prelude::*;
-use diesel::connection::SimpleConnection;
 use chrono::{NaiveDate, NaiveDateTime};
+use diesel::connection::SimpleConnection;
+use diesel::prelude::*;
 
 #[derive(Debug, Clone, Queryable, Selectable)]
 #[diesel(table_name = schema::users)]
@@ -34,7 +34,8 @@ fn setup_basic_connection() -> DuckDbConnection {
 }
 
 fn setup_users_table(conn: &mut DuckDbConnection) {
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         CREATE TABLE users (
             id INTEGER PRIMARY KEY,
             name VARCHAR,
@@ -42,11 +43,14 @@ fn setup_users_table(conn: &mut DuckDbConnection) {
             age INTEGER,
             created_at TIMESTAMP
         )
-    ").unwrap();
+    ",
+    )
+    .unwrap();
 }
 
 fn setup_orders_table(conn: &mut DuckDbConnection) {
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         CREATE TABLE orders (
             order_id INTEGER PRIMARY KEY,
             user_id INTEGER,
@@ -55,37 +59,48 @@ fn setup_orders_table(conn: &mut DuckDbConnection) {
             price DOUBLE,
             order_date DATE
         )
-    ").unwrap();
+    ",
+    )
+    .unwrap();
 }
 
 fn insert_basic_users(conn: &mut DuckDbConnection) {
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO users (id, name, email, age, created_at) VALUES 
         (1, 'John Doe', 'john@example.com', 30, '2025-07-07 20:07:30'),
         (2, 'Jane Smith', 'jane@example.com', 25, '2025-07-07 20:07:30'),
         (3, 'Bob Johnson', 'bob@example.com', 35, '2025-07-07 20:07:30')
-    ").unwrap();
+    ",
+    )
+    .unwrap();
 }
 
 fn insert_extended_users(conn: &mut DuckDbConnection) {
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO users (id, name, email, age, created_at) VALUES 
         (1, 'John Doe', 'john@example.com', 30, '2025-07-07 20:07:30'),
         (2, 'Jane Smith', 'jane@example.com', 25, '2025-07-07 20:07:30'),
         (3, 'Bob Johnson', 'bob@example.com', 35, '2025-07-07 20:07:30'),
         (4, 'Alice Brown', 'alice@example.com', 30, '2025-07-07 20:07:30')
-    ").unwrap();
+    ",
+    )
+    .unwrap();
 }
 
 fn insert_numbered_users(conn: &mut DuckDbConnection) {
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO users (id, name, email, age, created_at) VALUES 
         (1, 'User 1', 'user1@example.com', 21, '2025-07-07 20:07:30'),
         (2, 'User 2', 'user2@example.com', 22, '2025-07-07 20:07:30'),
         (3, 'User 3', 'user3@example.com', 23, '2025-07-07 20:07:30'),
         (4, 'User 4', 'user4@example.com', 24, '2025-07-07 20:07:30'),
         (5, 'User 5', 'user5@example.com', 25, '2025-07-07 20:07:30')
-    ").unwrap();
+    ",
+    )
+    .unwrap();
 }
 
 fn setup_users_with_basic_data() -> DuckDbConnection {
@@ -113,22 +128,28 @@ fn setup_orders_with_sample_data() -> DuckDbConnection {
     let mut conn = setup_basic_connection();
     setup_users_table(&mut conn);
     setup_orders_table(&mut conn);
-    
+
     // Insert sample users
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO users (id, name, email, age, created_at) VALUES 
         (1, 'John Doe', 'john@example.com', 30, '2025-07-07 20:07:30'),
         (2, 'Jane Smith', 'jane@example.com', 25, '2025-07-07 20:07:30')
-    ").unwrap();
-    
+    ",
+    )
+    .unwrap();
+
     // Insert sample orders
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO orders (order_id, user_id, product_name, quantity, price, order_date) VALUES 
         (1, 1, 'Laptop', 1, 999.99, '2025-07-07'),
         (2, 1, 'Mouse', 2, 25.50, '2025-07-07'),
         (3, 2, 'Keyboard', 1, 75.00, '2025-07-07')
-    ").unwrap();
-    
+    ",
+    )
+    .unwrap();
+
     conn
 }
 
@@ -140,7 +161,7 @@ fn test_query() {
         .filter(schema::users::age.lt(35))
         .load::<User>(&mut conn)
         .expect("Error loading users under 35");
-        
+
     println!("Found {} users under 35", users_under_35.len());
     assert!(users_under_35.len() >= 2); // Should find John and Jane
 }
@@ -153,7 +174,7 @@ fn test_basic_select_all() {
     let all_users = schema::users::table
         .load::<User>(&mut conn)
         .expect("Error loading all users");
-        
+
     assert_eq!(all_users.len(), 3);
 }
 
@@ -210,7 +231,7 @@ fn test_limit_and_offset() {
     assert_eq!(limit_offset_users.len(), 2); // Should get users 2, 3
 }
 
-#[test]  
+#[test]
 fn test_orders_table_basic() {
     let mut conn = setup_orders_with_sample_data();
 
@@ -231,7 +252,7 @@ fn test_orders_table_basic() {
 #[test]
 fn test_empty_result_set() {
     let mut conn = setup_empty_users_table();
-    
+
     // Test that empty queries work correctly
     let no_users = schema::users::table
         .load::<User>(&mut conn)
@@ -258,7 +279,7 @@ fn test_order_by_clauses() {
     assert_eq!(users_by_age_asc.len(), 3);
     // Should be Alice (25), Bob (30), Charlie (35)
 
-    // Test ORDER BY DESC  
+    // Test ORDER BY DESC
     let users_by_age_desc = schema::users::table
         .order(schema::users::age.desc())
         .load::<User>(&mut conn)
@@ -285,7 +306,7 @@ fn test_string_literal_filtering() {
         .filter(schema::users::name.eq("John Doe"))
         .load::<User>(&mut conn)
         .expect("Error loading users filtered by name");
-    
+
     assert_eq!(john_users.len(), 1);
 }
 
@@ -325,30 +346,36 @@ fn setup_empty_users_table() -> DuckDbConnection {
 fn setup_users_for_order_by() -> DuckDbConnection {
     let mut conn = setup_basic_connection();
     setup_users_table(&mut conn);
-    
+
     // Insert users with different ages for ordering tests
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO users (id, name, email, age, created_at) VALUES 
         (3, 'Charlie', 'charlie@example.com', 35, '2025-07-07 20:07:30'),
         (1, 'Alice', 'alice@example.com', 25, '2025-07-07 20:07:30'),
         (2, 'Bob', 'bob@example.com', 30, '2025-07-07 20:07:30')
-    ").unwrap();
-    
+    ",
+    )
+    .unwrap();
+
     conn
 }
 
 fn setup_users_for_string_operations() -> DuckDbConnection {
     let mut conn = setup_basic_connection();
     setup_users_table(&mut conn);
-    
+
     // Insert users with different names for string operation tests
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO users (id, name, email, age, created_at) VALUES 
         (1, 'John Doe', 'john@example.com', 30, '2025-07-07 20:07:30'),
         (2, 'Jane Smith', 'jane@example.com', 25, '2025-07-07 20:07:30'),
         (3, 'Johnny Cash', 'johnny@example.com', 50, '2025-07-07 20:07:30')
-    ").unwrap();
-    
+    ",
+    )
+    .unwrap();
+
     conn
 }
 
@@ -357,42 +384,51 @@ fn test_deserialized_values() {
     let mut conn = setup_basic_connection();
     setup_users_table(&mut conn);
     setup_orders_table(&mut conn);
-    
+
     // Insert test data with specific known values (non-null first)
-    conn.batch_execute("
+    conn.batch_execute(
+        "
         INSERT INTO users (id, name, email, age, created_at) VALUES 
         (42, 'Alice Cooper', 'alice@rock.com', 75, '1948-02-04 12:30:45')
-    ").unwrap();
-    
-    conn.batch_execute("
+    ",
+    )
+    .unwrap();
+
+    conn.batch_execute(
+        "
         INSERT INTO orders (order_id, user_id, product_name, quantity, price, order_date) VALUES 
         (1001, 42, 'Guitar', 2, 1299.99, '2025-07-10')
-    ").unwrap();
+    ",
+    )
+    .unwrap();
 
     // Test reading and verifying user values
     let users = schema::users::table
         .order(schema::users::id.asc())
         .load::<User>(&mut conn)
         .expect("Error loading users for deserialization test");
-    
+
     assert_eq!(users.len(), 1);
-    
+
     // Verify first user (Alice Cooper)
     let alice = &users[0];
     assert_eq!(alice.id, 42);
     assert_eq!(alice.name, Some("Alice Cooper".to_string()));
     assert_eq!(alice.email, Some("alice@rock.com".to_string()));
     assert_eq!(alice.age, Some(75));
-    assert_eq!(alice.created_at, Some(NaiveDateTime::parse_from_str("1948-02-04 12:30:45", "%Y-%m-%d %H:%M:%S").unwrap()));
+    assert_eq!(
+        alice.created_at,
+        Some(NaiveDateTime::parse_from_str("1948-02-04 12:30:45", "%Y-%m-%d %H:%M:%S").unwrap())
+    );
 
     // Test reading and verifying order values
     let orders = schema::orders::table
         .order(schema::orders::order_id.asc())
         .load::<Order>(&mut conn)
         .expect("Error loading orders for deserialization test");
-    
+
     assert_eq!(orders.len(), 1);
-    
+
     // Verify first order (Guitar)
     let guitar_order = &orders[0];
     assert_eq!(guitar_order.order_id, 1001);
@@ -400,18 +436,42 @@ fn test_deserialized_values() {
     assert_eq!(guitar_order.product_name, Some("Guitar".to_string()));
     assert_eq!(guitar_order.quantity, Some(2));
     assert_eq!(guitar_order.price, Some(1299.99));
-    assert_eq!(guitar_order.order_date, Some(NaiveDate::parse_from_str("2025-07-10", "%Y-%m-%d").unwrap()));
-    
+    assert_eq!(
+        guitar_order.order_date,
+        Some(NaiveDate::parse_from_str("2025-07-10", "%Y-%m-%d").unwrap())
+    );
+
     println!("✅ All deserialized values match expected data!");
-    println!("  Alice: id={}, name={:?}, age={:?}", alice.id, alice.name, alice.age);
-    println!("  Guitar Order: id={}, price={:?}, date={:?}", guitar_order.order_id, guitar_order.price, guitar_order.order_date);
-    
+    println!(
+        "  Alice: id={}, name={:?}, age={:?}",
+        alice.id, alice.name, alice.age
+    );
+    println!(
+        "  Guitar Order: id={}, price={:?}, date={:?}",
+        guitar_order.order_id, guitar_order.price, guitar_order.order_date
+    );
+
     // Test that we can access and verify all individual field types
     println!("📊 Type verification:");
     println!("  Integer (id): {} (type: i32)", alice.id);
-    println!("  Optional String (name): {:?} (type: Option<String>)", alice.name);
-    println!("  Optional Integer (age): {:?} (type: Option<i32>)", alice.age);
-    println!("  Optional DateTime: {:?} (type: Option<NaiveDateTime>)", alice.created_at);
-    println!("  Optional Float (price): {:?} (type: Option<f64>)", guitar_order.price);
-    println!("  Optional Date: {:?} (type: Option<NaiveDate>)", guitar_order.order_date);
+    println!(
+        "  Optional String (name): {:?} (type: Option<String>)",
+        alice.name
+    );
+    println!(
+        "  Optional Integer (age): {:?} (type: Option<i32>)",
+        alice.age
+    );
+    println!(
+        "  Optional DateTime: {:?} (type: Option<NaiveDateTime>)",
+        alice.created_at
+    );
+    println!(
+        "  Optional Float (price): {:?} (type: Option<f64>)",
+        guitar_order.price
+    );
+    println!(
+        "  Optional Date: {:?} (type: Option<NaiveDate>)",
+        guitar_order.order_date
+    );
 }

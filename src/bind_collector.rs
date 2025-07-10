@@ -52,7 +52,8 @@ impl<'a> BindCollector<'a, DuckDb> for DuckDbBindCollector<'a> {
     }
 
     fn push_null_value(&mut self, _metadata: ()) -> diesel::QueryResult<()> {
-        self.binds.push(ToSqlOutput::Owned(duckdb::types::Value::Null));
+        self.binds
+            .push(ToSqlOutput::Owned(duckdb::types::Value::Null));
         Ok(())
     }
 }

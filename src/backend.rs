@@ -44,52 +44,41 @@ impl HasSqlType<diesel::sql_types::SmallInt> for DuckDb {
 }
 
 impl HasSqlType<diesel::sql_types::Integer> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-        
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::BigInt> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Float> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Double> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Text> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Binary> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Bool> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Date> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Time> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }
 
 impl HasSqlType<diesel::sql_types::Timestamp> for DuckDb {
-    fn metadata(_: &mut ()) -> Self::TypeMetadata {
-    }
+    fn metadata(_: &mut ()) -> Self::TypeMetadata {}
 }

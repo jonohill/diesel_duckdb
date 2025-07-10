@@ -3,7 +3,6 @@ use duckdb::types::ValueRef;
 
 use crate::DuckDb;
 
-
 macro_rules! duckdb_to_sql_diesel {
     ($rust_type:ty, $diesel_type:ty) => {
         impl diesel::serialize::ToSql<$diesel_type, DuckDb> for $rust_type {
@@ -22,13 +21,15 @@ macro_rules! duckdb_to_sql_diesel {
 macro_rules! sql_diesel_to_duckdb {
     ($rust_type:ty, $diesel_type:ty) => {
         impl FromSql<$diesel_type, DuckDb> for $rust_type {
-            fn from_sql(duckdb_value: <DuckDb as diesel::backend::Backend>::RawValue<'_>) -> diesel::deserialize::Result<Self> {
+            fn from_sql(
+                duckdb_value: <DuckDb as diesel::backend::Backend>::RawValue<'_>,
+            ) -> diesel::deserialize::Result<Self> {
                 use duckdb::types::ToSqlOutput;
-                
+
                 let value_ref = match duckdb_value {
                     ToSqlOutput::Borrowed(v) => v,
                     ToSqlOutput::Owned(ref v) => ValueRef::from(v),
-                    _ => unimplemented!()
+                    _ => unimplemented!(),
                 };
 
                 let value = duckdb::types::FromSql::column_result(value_ref)?;
@@ -69,7 +70,7 @@ sql_diesel_to_duckdb!(Vec<u8>, Binary);
 
 // Date and time support
 duckdb_to_sql_diesel!(chrono::NaiveDate, Date);
-duckdb_to_sql_diesel!(chrono::NaiveTime, Time); 
+duckdb_to_sql_diesel!(chrono::NaiveTime, Time);
 duckdb_to_sql_diesel!(chrono::NaiveDateTime, Timestamp);
 
 sql_diesel_to_duckdb!(chrono::NaiveDate, Date);

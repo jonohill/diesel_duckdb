@@ -1,6 +1,6 @@
 use crate::DuckDb;
 use diesel::query_builder::{
-    AstPass, BoxedLimitOffsetClause, IntoBoxedClause, LimitClause, LimitOffsetClause, 
+    AstPass, BoxedLimitOffsetClause, IntoBoxedClause, LimitClause, LimitOffsetClause,
     NoLimitClause, NoOffsetClause, OffsetClause, QueryFragment,
 };
 use diesel::result::QueryResult;
@@ -49,7 +49,7 @@ where
 }
 
 // ============================================================================
-// BoxedLimitOffsetClause implementations  
+// BoxedLimitOffsetClause implementations
 // ============================================================================
 
 impl QueryFragment<DuckDb> for BoxedLimitOffsetClause<'_, DuckDb> {
