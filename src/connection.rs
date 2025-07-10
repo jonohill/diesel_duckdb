@@ -29,13 +29,6 @@ impl<'conn, 'query> DuckDbCursor<'conn, 'query> {
             _phantom: PhantomData,
         }
     }
-
-    fn empty() -> Self {
-        Self {
-            rows: Vec::new().into_iter(),
-            _phantom: PhantomData,
-        }
-    }
 }
 
 impl<'conn, 'query> Iterator for DuckDbCursor<'conn, 'query> {
@@ -145,19 +138,11 @@ impl<'row> Field<'row, DuckDb> for DuckDbField<'row> {
     }
 
     fn is_null(&self) -> bool {
-        match self.row.values.get(self.idx) {
-            Some(duckdb::types::Value::Null) => true,
-            _ => false,
-        }
+        matches!(self.row.values.get(self.idx), Some(duckdb::types::Value::Null))
     }
 
     fn value(&self) -> Option<<DuckDb as diesel::backend::Backend>::RawValue<'_>> {
-        if let Some(value) = self.row.values.get(self.idx) {
-            // Convert Value to ToSqlOutput
-            Some(duckdb::types::ToSqlOutput::Owned(value.clone()))
-        } else {
-            None
-        }
+        self.row.values.get(self.idx).map(|value| duckdb::types::ToSqlOutput::Owned(value.clone()))
     }
 }
 

@@ -39,7 +39,8 @@ macro_rules! sql_diesel_to_duckdb {
 }
 
 duckdb_to_sql_diesel!(i32, Integer);
-duckdb_to_sql_diesel!(&str, Text);
+// duckdb_to_sql_diesel!(&str, Text);
+duckdb_to_sql_diesel!(str, Text);
 
 sql_diesel_to_duckdb!(String, Text);
 sql_diesel_to_duckdb!(i32, Integer);

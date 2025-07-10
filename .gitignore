@@ -1,0 +1,6 @@
+/target
+diesel
+duckdb-rs
+.devcontainer
+.github
+plans

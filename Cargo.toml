@@ -1,13 +1,9 @@
 [package]
 name = "diesel_duckdb"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 
 [dependencies]
-diesel = { version = "2.2.10", features = ["r2d2", "sqlite", "i-implement-a-third-party-backend-and-opt-into-breaking-changes"] }
-duckdb = { version = "1.3.0", features = ["bundled", "chrono"] }
-byteorder = "1.5"
-chrono = { version = "0.4", features = ["serde"] }
-
-[dev-dependencies]
-diesel_migrations = "2.2.0"
+diesel = { version = "2.2.10", features = ["i-implement-a-third-party-backend-and-opt-into-breaking-changes"] }
+duckdb = { version = "1.3.2", features = ["bundled", "chrono"] }
+chrono = "0.4"
