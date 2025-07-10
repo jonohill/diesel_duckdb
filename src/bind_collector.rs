@@ -6,15 +6,6 @@ use diesel::{
 use duckdb::types::ToSqlOutput;
 use duckdb::{params_from_iter, ParamsFromIter};
 
-// impl From<ToSqlOutput<'_>> for ValueWrapper<'_> {
-//     fn from(output: ToSqlOutput<'_>) -> Self {
-//         match output {
-//             ToSqlOutput::Owned(value) => ValueWrapper(&mut value),
-//             ToSqlOutput::Borrowed(value) => ValueWrapper(&mut value.clone()),
-//         }
-//     }
-// }
-
 #[derive(Default)]
 pub struct DuckDbBindCollector<'a> {
     binds: Vec<ToSqlOutput<'a>>,
