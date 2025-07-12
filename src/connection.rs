@@ -163,6 +163,22 @@ pub struct DuckDbConnection {
     instrumentation: Option<Box<dyn Instrumentation>>,
 }
 
+impl DuckDbConnection {
+    pub fn establish_with_flags(database_url: &str, config: duckdb::Config) -> ConnectionResult<Self> {
+        let instrumentation = get_default_instrumentation();
+
+        let conn_result = DuckDBConn::open_with_flags(database_url, config);
+        let connection = conn_result.map_err(|e| ConnectionError::BadConnection(e.to_string()))?;
+
+        Ok(Self {
+            connection,
+            transaction_state: AnsiTransactionManager::default(),
+            instrumentation,
+            statement_cache: StatementCache::new(),
+        })
+    }
+}
+
 impl AsRef<DuckDBConn> for DuckDbConnection {
     fn as_ref(&self) -> &DuckDBConn {
         &self.connection
@@ -234,26 +250,8 @@ impl Connection for DuckDbConnection {
     type TransactionManager = AnsiTransactionManager;
 
     fn establish(database_url: &str) -> ConnectionResult<Self> {
-        let instrumentation = get_default_instrumentation();
-        // instrumentation.on_connection_event(InstrumentationEvent::StartEstablishConnection {
-        //     url: database_url,
-        // });
-
-        let conn_result = DuckDBConn::open(database_url);
-
-        // instrumentation.on_connection_event(InstrumentationEvent::FinishEstablishConnection {
-        //     url: database_url,
-        //     error: conn_result.as_ref().err(),
-        // });
-
-        let connection = conn_result.map_err(|e| ConnectionError::BadConnection(e.to_string()))?;
-
-        Ok(Self {
-            connection,
-            transaction_state: AnsiTransactionManager::default(),
-            instrumentation,
-            statement_cache: StatementCache::new(),
-        })
+        let config = duckdb::Config::default();
+        Self::establish_with_flags(database_url, config)
     }
 
     fn execute_returning_count<T>(&mut self, source: &T) -> QueryResult<usize>
