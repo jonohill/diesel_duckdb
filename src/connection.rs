@@ -163,6 +163,12 @@ pub struct DuckDbConnection {
     instrumentation: Option<Box<dyn Instrumentation>>,
 }
 
+impl AsRef<DuckDBConn> for DuckDbConnection {
+    fn as_ref(&self) -> &DuckDBConn {
+        &self.connection
+    }
+}
+
 impl ConnectionSealed for DuckDbConnection {}
 
 impl LoadConnection<DefaultLoadingMode> for DuckDbConnection {
