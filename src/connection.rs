@@ -149,10 +149,11 @@ impl<'row> Field<'row, DuckDb> for DuckDbField<'row> {
     }
 
     fn value(&self) -> Option<<DuckDb as diesel::backend::Backend>::RawValue<'_>> {
-        self.row
-            .values
-            .get(self.idx)
-            .map(|value| duckdb::types::ToSqlOutput::Owned(value.clone()))
+        match self.row.values.get(self.idx) {
+            Some(duckdb::types::Value::Null) => None,
+            Some(value) => Some(duckdb::types::ToSqlOutput::Owned(value.clone())),
+            None => None,
+        }
     }
 }
 
