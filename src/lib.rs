@@ -5,6 +5,7 @@ pub mod error;
 mod query_builder;
 mod query_fragments;
 pub mod types;
+mod chrono_support;
 
 #[cfg(test)]
 mod tests;

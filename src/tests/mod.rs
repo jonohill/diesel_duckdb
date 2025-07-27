@@ -1,4 +1,5 @@
 mod schema;
+mod chrono_test;
 
 use crate::DuckDbConnection;
 use chrono::{NaiveDate, NaiveDateTime};
